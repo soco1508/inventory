@@ -17,6 +17,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
+//D:\Go_Project\Inventory\backend>insert-by-table.exe -input seedData/users.json -table Users
+
 func main() {
 	ctx := context.Background()
 
@@ -33,13 +35,14 @@ func main() {
 		Name:     config.Database.Name,
 	}
 
-	db, err := db.PgxConnect(ctx, dbConfig)
+	pgxDb, err := db.PgxConnect(ctx, dbConfig)
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
-	defer db.Close(ctx)
+	defer pgxDb.Close(ctx)
 
 	inputFile := flag.String("input", "example.json", "Path to input JSON file")
+	tableName := flag.String("table", "", "Table name")
 	flag.Parse()
 
 	jsonData, err := os.ReadFile(*inputFile)
@@ -47,58 +50,73 @@ func main() {
 		log.Fatalf("Error reading JSON file: %+v", err)
 	}
 
-	// users := []models.User{}
-	// if err = json.Unmarshal(jsonData, &users); err != nil {
-	// 	log.Fatalf("Error parsing from json to struct: %+v", err)
-	// }
-	// products := []models.Product{}
-	// if err = json.Unmarshal(jsonData, &products); err != nil {
-	// 	log.Fatalf("Error parsing from json to struct: %+v", err)
-	// }
-	// sales := []models.Sale{}
-	// if err = json.Unmarshal(jsonData, &sales); err != nil {
-	// 	log.Fatalf("Error parsing from json to struct: %+v", err)
-	// }
-	// salesSummary := []models.SaleSummary{}
-	// if err = json.Unmarshal(jsonData, &salesSummary); err != nil {
-	// 	log.Fatalf("Error parsing from json to struct: %+v", err)
-	// }
-	// purchases := []models.Purchase{}
-	// if err = json.Unmarshal(jsonData, &purchases); err != nil {
-	// 	log.Fatalf("Error parsing from json to struct: %+v", err)
-	// }
-	// purchaseSummary := []models.PurchaseSummary{}
-	// if err = json.Unmarshal(jsonData, &purchaseSummary); err != nil {
-	// 	log.Fatalf("Error parsing from json to struct: %+v", err)
-	// }
-	// expenses := []models.Expense{}
-	// if err = json.Unmarshal(jsonData, &expenses); err != nil {
-	// 	log.Fatalf("Error parsing from json to struct: %+v", err)
-	// }
-	// expenseSummary := []models.ExpenseSummary{}
-	// if err = json.Unmarshal(jsonData, &expenseSummary); err != nil {
-	// 	log.Fatalf("Error parsing from json to struct: %+v", err)
-	// }
-	expenseByCategory := []models.ExpenseByCategory{}
-	if err = json.Unmarshal(jsonData, &expenseByCategory); err != nil {
-		log.Fatalf("Error parsing from json to struct: %+v", err)
-	}
-
-	//err = BulkInsertCopy(ctx, db, users)
-	//err = BulkInsertCopy(ctx, db, "Users", users)
-	//err = BulkInsertCopy(ctx, db, "Products", products)
-	//err = BulkInsertCopy(ctx, db, "Sales", sales)
-	//err = BulkInsertCopy(ctx, db, "SalesSummary", salesSummary)
-	// err = BulkInsertCopy(ctx, db, "Purchases", purchases)
-	// err = BulkInsertCopy(ctx, db, "PurchaseSummary", purchaseSummary)
-	// err = BulkInsertCopy(ctx, db, "Expenses", expenses)
-	// err = BulkInsertCopy(ctx, db, "ExpenseSummary", expenseSummary)
-	err = BulkInsertCopy(ctx, db, "ExpenseByCategory", expenseByCategory)
+	err = BatchInsertByTable(ctx, pgxDb, jsonData, *tableName)
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
 
 	fmt.Println("Data insertion completed")
+}
+
+func BatchInsertByTable(ctx context.Context, pgxDb *pgx.Conn, jsonData []byte, tableName string) error {
+	switch tableName {
+	case db.Users.String():
+		users := []models.User{}
+		if err := json.Unmarshal(jsonData, &users); err != nil {
+			return fmt.Errorf("error parsing from json to struct: %+v", err)
+		}
+		return BulkInsertCopy(ctx, pgxDb, db.Users.String(), users)
+	case db.Products.String():
+		products := []models.Product{}
+		if err := json.Unmarshal(jsonData, &products); err != nil {
+			return fmt.Errorf("error parsing from json to struct: %+v", err)
+		}
+		return BulkInsertCopy(ctx, pgxDb, db.Products.String(), products)
+	case db.Sales.String():
+		sales := []models.Sale{}
+		if err := json.Unmarshal(jsonData, &sales); err != nil {
+			return fmt.Errorf("error parsing from json to struct: %+v", err)
+		}
+		return BulkInsertCopy(ctx, pgxDb, db.Sales.String(), sales)
+	case db.SalesSummary.String():
+		salesSummary := []models.SaleSummary{}
+		if err := json.Unmarshal(jsonData, &salesSummary); err != nil {
+			return fmt.Errorf("error parsing from json to struct: %+v", err)
+		}
+		return BulkInsertCopy(ctx, pgxDb, db.SalesSummary.String(), salesSummary)
+	case db.Purchases.String():
+		purchases := []models.Purchase{}
+		if err := json.Unmarshal(jsonData, &purchases); err != nil {
+			return fmt.Errorf("error parsing from json to struct: %+v", err)
+		}
+		return BulkInsertCopy(ctx, pgxDb, db.Purchases.String(), purchases)
+	case db.PurchaseSummary.String():
+		purchaseSummary := []models.PurchaseSummary{}
+		if err := json.Unmarshal(jsonData, &purchaseSummary); err != nil {
+			return fmt.Errorf("error parsing from json to struct: %+v", err)
+		}
+		return BulkInsertCopy(ctx, pgxDb, db.PurchaseSummary.String(), purchaseSummary)
+	case db.Expenses.String():
+		expenses := []models.Expense{}
+		if err := json.Unmarshal(jsonData, &expenses); err != nil {
+			return fmt.Errorf("error parsing from json to struct: %+v", err)
+		}
+		return BulkInsertCopy(ctx, pgxDb, db.Expenses.String(), expenses)
+	case db.ExpenseSummary.String():
+		expenseSummary := []models.ExpenseSummary{}
+		if err := json.Unmarshal(jsonData, &expenseSummary); err != nil {
+			return fmt.Errorf("error parsing from json to struct: %+v", err)
+		}
+		return BulkInsertCopy(ctx, pgxDb, db.ExpenseSummary.String(), expenseSummary)
+	case db.ExpenseByCategory.String():
+		expenseByCategory := []models.ExpenseByCategory{}
+		if err := json.Unmarshal(jsonData, &expenseByCategory); err != nil {
+			return fmt.Errorf("error parsing from json to struct: %+v", err)
+		}
+		return BulkInsertCopy(ctx, pgxDb, db.ExpenseByCategory.String(), expenseByCategory)
+	default:
+		return nil
+	}
 }
 
 func BulkInsertCopy[T any](ctx context.Context, conn *pgx.Conn, tableName string, items []T) error {
@@ -158,22 +176,3 @@ func BulkInsertCopy[T any](ctx context.Context, conn *pgx.Conn, tableName string
 
 	return nil
 }
-
-// func BulkInsertCopy(ctx context.Context, conn *pgx.Conn, users []models.User) error {
-// 	rows := make([][]any, len(users))
-// 	for i, user := range users {
-// 		rows[i] = []any{user.UserID, user.Name, user.Email}
-// 	}
-
-// 	_, err := conn.CopyFrom(
-// 		ctx,
-// 		pgx.Identifier{"Users"},
-// 		[]string{"userId", "name", "email"},
-// 		pgx.CopyFromRows(rows),
-// 	)
-// 	if err != nil {
-// 		return fmt.Errorf("bulk insert err:\n %+v", err)
-// 	}
-
-// 	return nil
-// }
