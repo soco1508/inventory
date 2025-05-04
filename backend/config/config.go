@@ -9,6 +9,7 @@ import (
 
 type Config struct {
 	Database   Database
+	BaseUrl    string `envconfig:"BASE_URL"`
 	ServerPort string `envconfig:"SERVER_PORT"`
 }
 

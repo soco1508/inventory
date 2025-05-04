@@ -35,7 +35,7 @@ func main() {
 		Name:     config.Database.Name,
 	}
 
-	pgxDb, err := db.PgxConnect(ctx, dbConfig)
+	pgxDb, err := db.PgxInitDB(ctx, dbConfig)
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}

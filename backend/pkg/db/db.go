@@ -17,21 +17,21 @@ type DBConfig struct {
 	Name     string
 }
 
-func SqlxConnect(ctx context.Context, dbConfig DBConfig) (*sqlx.DB, error) {
+func SqlxInitDB(ctx context.Context, dbConfig DBConfig) (*sqlx.DB, error) {
 	db, err := sqlx.ConnectContext(ctx, "postgres", getConnectionStr(dbConfig))
 	if err != nil {
-		return nil, fmt.Errorf("cannot connect sqlxdb, err:\n %+v", err)
+		return nil, fmt.Errorf("could not connect to the database, err:\n %+v", err)
 	}
 	if err = db.PingContext(ctx); err != nil {
-		return nil, fmt.Errorf("cannot ping sqlxdb, err:\n %+v", err)
+		return nil, fmt.Errorf("could not ping the database, err:\n %+v", err)
 	}
 	return db, nil
 }
 
-func PgxConnect(ctx context.Context, dbConfig DBConfig) (*pgx.Conn, error) {
+func PgxInitDB(ctx context.Context, dbConfig DBConfig) (*pgx.Conn, error) {
 	db, err := pgx.Connect(ctx, getConnectionStr(dbConfig))
 	if err != nil {
-		return nil, fmt.Errorf("cannot connect pgxdb, err:\n %+v", err)
+		return nil, fmt.Errorf("could not connect to the database, err:\n %+v", err)
 	}
 	return db, nil
 }
