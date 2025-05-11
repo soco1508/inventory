@@ -22,11 +22,12 @@ func NewPurchaseSummaryRepository(db *sqlx.DB) PurchaseSummaryRepository {
 }
 
 func (p *purchaseSummaryRepository) GetPurchaseSummary(ctx context.Context) ([]*models.PurchaseSummary, error) {
-	sql := `SELECT * FROM "PurchaseSummary" ORDER BY "date" DESC LIMIT 5`
+	sql := `SELECT * FROM purchase_summary ORDER BY date DESC LIMIT 5`
 	rows, err := p.db.QueryxContext(ctx, sql)
 	if err != nil {
 		return nil, fmt.Errorf("query PurchaseSummary err: %v", err)
 	}
+	defer rows.Close()
 
 	purchaseSummary := []*models.PurchaseSummary{}
 	for rows.Next() {

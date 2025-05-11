@@ -7,10 +7,10 @@ import (
 )
 
 type Purchase struct {
-	PurchaseID string          `db:"purchaseId" json:"purchaseId"`
-	ProductID  string          `db:"productId" json:"productId"`
+	PurchaseID string          `db:"purchase_id" json:"purchaseId"`
+	ProductID  string          `db:"product_id" json:"productId"`
 	Timestamp  time.Time       `db:"timestamp" json:"timestamp"`
 	Quantity   int32           `db:"quantity" json:"quantity"`
-	UnitCost   decimal.Decimal `db:"unitCost" json:"unitCost"`
-	TotalCost  decimal.Decimal `db:"totalCost" json:"totalCost"`
+	UnitCost   decimal.Decimal `db:"unit_cost" json:"unitCost"`
+	TotalCost  decimal.Decimal `db:"total_cost" json:"totalCost"`
 }

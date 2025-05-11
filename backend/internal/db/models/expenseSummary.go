@@ -7,7 +7,7 @@ import (
 )
 
 type ExpenseSummary struct {
-	ExpenseSummaryId string          `db:"expenseSummaryId" json:"expenseSummaryId"`
-	TotalExpenses    decimal.Decimal `db:"totalExpenses" json:"totalExpenses"`
+	ExpenseSummaryId string          `db:"expense_summary_id" json:"expenseSummaryId"`
+	TotalExpenses    decimal.Decimal `db:"total_expenses" json:"totalExpenses"`
 	Date             time.Time       `db:"date" json:"date"`
 }

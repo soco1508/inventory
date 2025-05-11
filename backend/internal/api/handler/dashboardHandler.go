@@ -4,6 +4,7 @@ import (
 	"backend/internal/service"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -34,41 +35,46 @@ func NewDashboardHandler(
 
 func (h *DashboardHandler) GetDashboardMetrics(c *gin.Context) {
 	ctx := c.Request.Context()
-	var dashboardMetrics []any
-	products, err := h.productService.GetPopularProducts(ctx)
+
+	start := time.Now()
+
+	popularProducts, err := h.productService.GetPopularProducts(ctx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 		log.Fatalf("%v", err)
 	}
-	dashboardMetrics = append(dashboardMetrics, products)
 
 	saleSummary, err := h.saleSummaryService.GetSaleSummary(ctx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 		log.Fatalf("%v", err)
 	}
-	dashboardMetrics = append(dashboardMetrics, saleSummary)
 
 	purchaseSummary, err := h.purchaseSummaryService.GetPurchaseSummary(ctx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 		log.Fatalf("%v", err)
 	}
-	dashboardMetrics = append(dashboardMetrics, purchaseSummary)
 
 	expenseSummary, err := h.expenseSummaryService.GetExpenseSummary(ctx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 		log.Fatalf("%v", err)
 	}
-	dashboardMetrics = append(dashboardMetrics, expenseSummary)
 
 	expenseByCategory, err := h.expenseByCategoryService.GetExpenseByCategory(ctx)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 		log.Fatalf("%v", err)
 	}
-	dashboardMetrics = append(dashboardMetrics, expenseByCategory)
 
-	c.JSON(http.StatusOK, dashboardMetrics)
+	elapsed := time.Since(start)
+	log.Printf("Elapsed time: %v", elapsed)
+	c.JSON(http.StatusOK, gin.H{
+		"popularProducts":   popularProducts,
+		"salesSummary":      saleSummary,
+		"purchaseSummary":   purchaseSummary,
+		"expenseSummary":    expenseSummary,
+		"expenseByCategory": expenseByCategory,
+	})
 }

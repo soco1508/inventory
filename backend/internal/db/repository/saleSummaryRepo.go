@@ -22,11 +22,12 @@ func NewSaleSummaryRepository(db *sqlx.DB) SaleSummaryRepository {
 }
 
 func (p *saleSummaryRepository) GetSaleSummary(ctx context.Context) ([]*models.SaleSummary, error) {
-	sql := `SELECT * FROM "SalesSummary" ORDER BY "date" DESC LIMIT 5`
+	sql := `SELECT * FROM sales_summary ORDER BY date DESC LIMIT 5`
 	rows, err := p.db.QueryxContext(ctx, sql)
 	if err != nil {
 		return nil, fmt.Errorf("query SalesSummary err: %v", err)
 	}
+	defer rows.Close()
 
 	saleSummary := []*models.SaleSummary{}
 	for rows.Next() {

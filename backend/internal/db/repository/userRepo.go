@@ -20,7 +20,7 @@ func NewUserRepository(db *sqlx.DB) UserRepository {
 }
 
 func (u *userRepository) SaveUser(ctx context.Context, user models.User) error {
-	sql := `INSERT INTO user(userId, name, email) VALUES (:userId, :name, :email)`
+	sql := `INSERT INTO user(user_id, name, email) VALUES (:user_id, :name, :email)`
 	_, err := u.db.NamedExecContext(ctx, sql, &user)
 	return err
 }

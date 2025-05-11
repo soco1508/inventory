@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jmoiron/sqlx"
@@ -17,12 +18,18 @@ type DBConfig struct {
 	Name     string
 }
 
-func SqlxInitDB(ctx context.Context, dbConfig DBConfig) (*sqlx.DB, error) {
-	db, err := sqlx.ConnectContext(ctx, "postgres", getConnectionStr(dbConfig))
+func SqlxInitDB(dbConfig DBConfig) (*sqlx.DB, error) {
+	db, err := sqlx.Open("postgres", getConnectionStr(dbConfig))
 	if err != nil {
 		return nil, fmt.Errorf("could not connect to the database, err:\n %+v", err)
 	}
-	if err = db.PingContext(ctx); err != nil {
+
+	db.SetMaxOpenConns(50)
+	db.SetMaxIdleConns(10)
+	db.SetConnMaxLifetime(5 * time.Minute)
+	db.SetConnMaxIdleTime(1 * time.Minute)
+
+	if err = db.Ping(); err != nil {
 		return nil, fmt.Errorf("could not ping the database, err:\n %+v", err)
 	}
 	return db, nil

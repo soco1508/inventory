@@ -22,11 +22,12 @@ func NewExpenseSummaryRepository(db *sqlx.DB) ExpenseSummaryRepository {
 }
 
 func (p *expenseSummaryRepository) GetExpenseSummary(ctx context.Context) ([]*models.ExpenseSummary, error) {
-	sql := `SELECT * FROM "ExpenseSummary" ORDER BY "date" DESC LIMIT 5`
+	sql := `SELECT * FROM expense_summary ORDER BY date DESC LIMIT 5`
 	rows, err := p.db.QueryxContext(ctx, sql)
 	if err != nil {
 		return nil, fmt.Errorf("query ExpenseSummary err: %v", err)
 	}
+	defer rows.Close()
 
 	expenseSummary := []*models.ExpenseSummary{}
 	for rows.Next() {

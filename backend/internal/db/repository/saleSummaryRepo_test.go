@@ -25,7 +25,7 @@ func TestGetSaleSummary(t *testing.T) {
 	repo := NewSaleSummaryRepository(sqlxDB)
 	ctx := context.Background()
 
-	query := `SELECT * FROM "SalesSummary" ORDER BY "date" DESC LIMIT 5`
+	query := `SELECT * FROM sales_summary ORDER BY date DESC LIMIT 5`
 
 	// Test case 1: Success
 	t.Run("Success", func(t *testing.T) {
@@ -34,7 +34,7 @@ func TestGetSaleSummary(t *testing.T) {
 		date2, _ := time.Parse(time.RFC3339, "2023-09-03T13:50:20Z")
 		changePct1 := decimal.NewFromFloat(61.51)
 		changePct2 := decimal.NewFromFloat(-2.28)
-		rows := sqlmock.NewRows([]string{"salesSummaryId", "totalValue", "changePercentage", "date"}).
+		rows := sqlmock.NewRows([]string{"sales_summary_id", "total_value", "change_percentage", "date"}).
 			AddRow("9234a776-e6ac-46e2-bc24-c959ce216751", 4754106.83, 61.51, date1).
 			AddRow("e5648831-7d0e-4ef5-8e04-f6e6a0eaafb1", 1512948.97, -2.28, date2)
 
@@ -77,7 +77,7 @@ func TestGetSaleSummary(t *testing.T) {
 	t.Run("ScanError", func(t *testing.T) {
 		// Mock data with invalid data type
 		date, _ := time.Parse(time.RFC3339, "2025-05-01T10:00:00Z")
-		rows := sqlmock.NewRows([]string{"salesSummaryId", "totalValue", "changePercentage", "date"}).
+		rows := sqlmock.NewRows([]string{"sales_summary_id", "total_value", "change_percentage", "date"}).
 			AddRow("SS001", "invalid_decimal", 5.25, date) // totalValue không phải số
 
 		// set expectation
@@ -96,7 +96,7 @@ func TestGetSaleSummary(t *testing.T) {
 	// Test case 4: Not have data
 	t.Run("NoData", func(t *testing.T) {
 		// Empty mock data
-		rows := sqlmock.NewRows([]string{"salesSummaryId", "totalValue", "changePercentage", "date"})
+		rows := sqlmock.NewRows([]string{"sales_summary_id", "total_value", "change_percentage", "date"})
 
 		// Set expectation
 		mock.ExpectQuery(regexp.QuoteMeta(query)).WillReturnRows(rows)
@@ -112,7 +112,7 @@ func TestGetSaleSummary(t *testing.T) {
 	t.Run("NullChangePercentage", func(t *testing.T) {
 		// Mock data with changePercentage is null
 		date, _ := time.Parse(time.RFC3339, "2025-05-01T10:00:00Z")
-		rows := sqlmock.NewRows([]string{"salesSummaryId", "totalValue", "changePercentage", "date"}).
+		rows := sqlmock.NewRows([]string{"sales_summary_id", "total_value", "change_percentage", "date"}).
 			AddRow("SS001", 1000.50, nil, date)
 
 		mock.ExpectQuery(regexp.QuoteMeta(query)).WillReturnRows(rows)

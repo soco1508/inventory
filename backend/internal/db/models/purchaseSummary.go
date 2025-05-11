@@ -7,8 +7,8 @@ import (
 )
 
 type PurchaseSummary struct {
-	PurchaseSummaryID string          `db:"purchaseSummaryId" json:"purchaseSummaryId"`
-	TotalPurchased    decimal.Decimal `db:"totalPurchased" json:"totalPurchased"`
-	ChangePercentage  decimal.Decimal `db:"changePercentage" json:"changePercentage"`
-	Date              time.Time       `db:"date" json:"date"`
+	PurchaseSummaryID string           `db:"purchase_summary_id" json:"purchaseSummaryId"`
+	TotalPurchased    decimal.Decimal  `db:"total_purchased" json:"totalPurchased"`
+	ChangePercentage  *decimal.Decimal `db:"change_percentage" json:"changePercentage"`
+	Date              time.Time        `db:"date" json:"date"`
 }

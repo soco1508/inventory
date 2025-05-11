@@ -22,11 +22,12 @@ func NewExpenseByCategoryRepository(db *sqlx.DB) ExpenseByCategoryRepository {
 }
 
 func (r *expenseByCategoryRepository) GetExpenseByCategory(ctx context.Context) ([]*models.ExpenseByCategory, error) {
-	sql := `SELECT * FROM "ExpenseByCategory" ORDER BY "date" DESC LIMIT 5`
+	sql := `SELECT * FROM expense_by_category ORDER BY date DESC LIMIT 5`
 	rows, err := r.db.QueryxContext(ctx, sql)
 	if err != nil {
 		return nil, fmt.Errorf("query ExpenseByCategory err: %v", err)
 	}
+	defer rows.Close()
 
 	expenseByCategory := []*models.ExpenseByCategory{}
 	for rows.Next() {
