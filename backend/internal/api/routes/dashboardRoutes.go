@@ -9,7 +9,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func RegisterDashboardRoutes(app *gin.Engine, db *sqlx.DB) {
+func RegisterDashboard(router *gin.Engine, db *sqlx.DB) {
 	//repository
 	productRepo := repository.NewProductRepository(db)
 	saleSummaryRepo := repository.NewSaleSummaryRepository(db)
@@ -28,6 +28,5 @@ func RegisterDashboardRoutes(app *gin.Engine, db *sqlx.DB) {
 	dashboardHandler := handler.NewDashboardHandler(productService, saleSummaryService, purchaseSummaryService, expenseSummaryService, expenseByCategoryService)
 
 	//routes
-	baseUrl := app.Group("/")
-	baseUrl.GET("/dashboard", dashboardHandler.GetDashboardMetrics)
+	router.GET("/dashboard", dashboardHandler.GetDashboardMetrics)
 }

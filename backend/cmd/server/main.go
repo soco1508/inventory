@@ -4,7 +4,14 @@ import (
 	"backend/config"
 	"backend/internal/api/routes"
 	"backend/pkg/db"
+	"context"
 	"log"
+	"net"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -12,7 +19,8 @@ import (
 )
 
 func main() {
-	app := gin.Default()
+	router := gin.Default()
+
 	config, err := config.NewParsedConfig()
 	if err != nil {
 		log.Fatalf("%v", err)
@@ -30,17 +38,45 @@ func main() {
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
-	defer sqlxDb.Close()
+	defer func() {
+		if err := sqlxDb.Close(); err != nil {
+			log.Fatalf("Error when closing db connection: %v", err)
+		}
+	}()
 
 	corsCfg := cors.DefaultConfig()
 	corsCfg.AllowOrigins = []string{"*"}
 	corsCfg.AllowCredentials = true
 	corsCfg.AllowHeaders = []string{"*"}
 
-	app.Use(cors.New(corsCfg))
-	routes.RegisterDashboardRoutes(app, sqlxDb)
+	router.Use(cors.New(corsCfg))
+	routes.RegisterDashboard(router, sqlxDb)
+	routes.RegisterProduct(router, sqlxDb)
 
-	if err = app.Run(config.BaseUrl + ":" + config.ServerPort); err != nil {
-		log.Fatalf("Could not start the server: %v", err)
+	server := &http.Server{
+		Addr:    net.JoinHostPort(config.ServerHost, config.ServerPort),
+		Handler: router,
+	}
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		log.Printf("Server is running on %s\n", server.Addr)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Could not start the server: %v", err)
+		}
+	}()
+
+	<-sigChan
+	log.Println("Server is closing...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err = server.Shutdown(ctx); err != nil {
+		log.Printf("Failed to shutdown server: %v", err)
+	} else {
+		log.Print("Gracefully shutdown server")
 	}
 }

@@ -44,7 +44,7 @@ const CardSalesSummary = () => {
   }
 
   return (
-    <div className="flex flex-col justify-between bg-white shadow-md rounded-2xl row-span-3 xl:row-span-6">
+    <div className="bg-white shadow-md rounded-2xl row-span-3 xl:row-span-6 flex flex-col justify-between">
       {isLoading ? (
         <div className="m-5">Loading...</div>
       ) : (
@@ -86,10 +86,10 @@ const CardSalesSummary = () => {
               </select>
             </div>
             {/* CHART */}
-            <ResponsiveContainer width="100%" height={350} className="px-7">
+            <ResponsiveContainer width="100%" height={300} className="px-7">
               <BarChart
                 data={salesData}
-                margin={{ top: 0, right: 0, left: -25, bottom: 0 }}
+                margin={{ top: 0, right: 0, left: -25, bottom: 20 }}
               >
                 <CartesianGrid strokeDasharray="" vertical={false} />
                 <XAxis
@@ -132,7 +132,7 @@ const CardSalesSummary = () => {
           {/* FOOTER */}
           <div>
             <hr />
-            <div className="flex justify-between items-center mt-6 text-sm px-7 mb-4">
+            <div className="flex justify-between items-center mt-1 text-sm px-7 mb-4">
               <p>{salesData.length || 0} days</p>
               <p className="text-sm">
                 Highest Sales Date:{" "}
