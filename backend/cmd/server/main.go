@@ -19,6 +19,7 @@ import (
 )
 
 func main() {
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 
 	config, err := config.NewParsedConfig()
@@ -52,6 +53,8 @@ func main() {
 	router.Use(cors.New(corsCfg))
 	routes.RegisterDashboard(router, sqlxDb)
 	routes.RegisterProduct(router, sqlxDb)
+	routes.RegisterExpense(router, sqlxDb)
+	routes.RegisterUser(router, sqlxDb)
 
 	server := &http.Server{
 		Addr:    net.JoinHostPort(config.ServerHost, config.ServerPort),

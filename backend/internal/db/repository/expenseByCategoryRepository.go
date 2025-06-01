@@ -22,20 +22,19 @@ func NewExpenseByCategoryRepository(db *sqlx.DB) ExpenseByCategoryRepository {
 }
 
 func (r *expenseByCategoryRepository) GetExpenseByCategory(ctx context.Context) ([]*models.ExpenseByCategory, error) {
-	sql := `SELECT * FROM expense_by_category ORDER BY date DESC LIMIT 5`
-	rows, err := r.db.QueryxContext(ctx, sql)
-	if err != nil {
-		return nil, fmt.Errorf("query ExpenseByCategory err: %v", err)
-	}
-	defer rows.Close()
+	sql := `SELECT expense_by_category_id,
+				   expense_summary_id,
+				   date,
+				   category,
+				   amount		
+			FROM expense_by_category 
+			ORDER BY date DESC 
+			LIMIT 5
+		`
 
 	expenseByCategory := []*models.ExpenseByCategory{}
-	for rows.Next() {
-		item := models.ExpenseByCategory{}
-		if err = rows.StructScan(&item); err != nil {
-			return nil, fmt.Errorf("StructScan ExpenseByCategory err: %v", err)
-		}
-		expenseByCategory = append(expenseByCategory, &item)
+	if err := r.db.SelectContext(ctx, &expenseByCategory, sql); err != nil {
+		return nil, fmt.Errorf("query ExpenseByCategory err: %v", err)
 	}
 
 	return expenseByCategory, nil

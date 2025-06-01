@@ -1,5 +1,6 @@
 "use client";
-import { useAppSelector } from "@/app/redux";
+
+import { useAppDispatch, useAppSelector } from "@/app/redux";
 import { setIsSidebarCollapsed } from "@/state";
 import {
   Archive,
@@ -11,10 +12,10 @@ import {
   SlidersHorizontal,
   User,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
-import { useDispatch } from "react-redux";
 
 interface SidebarLinkProps {
   href: string;
@@ -32,18 +33,20 @@ const SidebarLink = ({
   const pathname = usePathname();
   const isActive =
     pathname === href || (pathname === "/" && href === "/dashboard");
+
   return (
     <Link href={href}>
       <div
         className={`cursor-pointer flex items-center ${
-          isCollapsed ? "justify-center py-4" : "justify-start py-4 px-8"
+          isCollapsed ? "justify-center py-4" : "justify-start px-8 py-4"
         }
         hover:text-blue-500 hover:bg-blue-100 gap-3 transition-colors ${
           isActive ? "bg-blue-200 text-white" : ""
         }
-        `}
+      }`}
       >
         <Icon className="w-6 h-6 !text-gray-700" />
+
         <span
           className={`${
             isCollapsed ? "hidden" : "block"
@@ -57,7 +60,7 @@ const SidebarLink = ({
 };
 
 const Sidebar = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const isSidebarCollapsed = useAppSelector(
     (state) => state.global.isSidebarCollapsed
   );
@@ -74,20 +77,27 @@ const Sidebar = () => {
     <div className={sidebarClassNames}>
       {/* TOP LOGO */}
       <div
-        className={`flex justify-between md:justify-normal items-center gap-3 pt-8 ${
+        className={`flex gap-3 justify-between md:justify-normal items-center pt-8 ${
           isSidebarCollapsed ? "px-5" : "px-8"
         }`}
       >
-        <div>logo</div>
+        <Image
+          src="/logo.png"
+          alt="tdstock-logo"
+          width={27}
+          height={27}
+          className="rounded w-8"
+        />
         <h1
           className={`${
             isSidebarCollapsed ? "hidden" : "block"
-          } font-semibold text-2xl`}
+          } font-extrabold text-2xl`}
         >
-          DStock
+          EDSTOCK
         </h1>
+
         <button
-          className="md:hidden py-3 px-3 bg-gray-100 rounded-full hover:bg-blue-100"
+          className="md:hidden px-3 py-3 bg-gray-100 rounded-full hover:bg-blue-100"
           onClick={toggleSidebar}
         >
           <Menu className="w-4 h-4" />
@@ -135,8 +145,8 @@ const Sidebar = () => {
       </div>
 
       {/* FOOTER */}
-      <div className={`${isSidebarCollapsed ? "hidden" : "block mb-8"}`}>
-        <p className="text-center text-xs text-gray-500">&copy; 2025 Dstock</p>
+      <div className={`${isSidebarCollapsed ? "hidden" : "block"} mb-10`}>
+        <p className="text-center text-xs text-gray-500">&copy; TDStock</p>
       </div>
     </div>
   );

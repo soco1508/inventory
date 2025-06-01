@@ -43,7 +43,6 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/gin-contrib/cors v1.7.5
 	github.com/gin-gonic/gin v1.10.0
-	github.com/google/uuid v1.6.0
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/shopspring/decimal v1.4.0
