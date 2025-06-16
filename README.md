@@ -1,6 +1,6 @@
-# soco1508/inventory
+# Inventory
 
-soco1508/inventory is a full-stack inventory management application designed to track products, sales, purchases, and expenses. It features a Go-based backend and a Next.js frontend with a responsive user interface, Redux for state management, and Recharts for data visualization.
+Inventory is a full-stack inventory management application designed to track products, sales, purchases, and expenses. It features a Go-based backend and a Next.js frontend with a responsive user interface, Redux for state management, and Recharts for data visualization.
 
 ## Key Features
 
